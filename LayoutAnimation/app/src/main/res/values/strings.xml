@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">LayoutAnimation</string>
+
+    <string name="hello_world">Click me</string>
+    <string name="action_settings">Settings</string>
+
+    <string name="camera_navigation_back">Back</string>
+    <string name="camera_navigation_reset">Reset</string>
+    <string name="camera_navigation_next">Next</string>
+
+    <string name="camera_brightness">Brightness</string>
+    <string name="camera_contrast">Contrast</string>
+    <string name="camera_saturation">Saturation</string>
+    <string name="camera_temperature">Temperature</string>
+    <string name="camera_exposure">Exposure</string>
+</resources>
