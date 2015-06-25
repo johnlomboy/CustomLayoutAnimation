@@ -3,6 +3,12 @@
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
 
-    <dimen name="text_size_camera_setting">18sp</dimen>
+    <dimen name="text_size_camera_setting">14sp</dimen>
+    <dimen name="padding_top_and_bottom_camera_seek_bar">8dp</dimen>
+    <dimen name="layout_width_camera_seek_bar">200dp</dimen>
     <dimen name="layout_width_camera_text_view">110dp</dimen>
+
+    <dimen name="size_width_height_camera_seek_bar_thumb">18dp</dimen>
+    <dimen name="stroke_width_camera_seek_bar">1dp</dimen>
+
 </resources>

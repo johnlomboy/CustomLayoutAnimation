@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="oval">
+    <stroke
+        android:width="@dimen/stroke_width_camera_seek_bar"
+        android:color="#ffffff" />
+    <solid android:color="@color/darker_grey" />
+    <size
+        android:width="@dimen/size_width_height_camera_seek_bar_thumb"
+        android:height="@dimen/size_width_height_camera_seek_bar_thumb" />
+</shape>

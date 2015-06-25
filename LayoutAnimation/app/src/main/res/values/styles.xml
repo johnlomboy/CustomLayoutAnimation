@@ -5,4 +5,14 @@
         <!-- Customize your theme here. -->
     </style>
 
+    <style name="CameraSeekBarTheme">
+        <item name="android:layout_width">@dimen/layout_width_camera_seek_bar</item>
+        <item name="android:max">@integer/max_camera_seek_bar</item>
+        <item name="android:paddingBottom">@dimen/padding_top_and_bottom_camera_seek_bar</item>
+        <item name="android:paddingTop">@dimen/padding_top_and_bottom_camera_seek_bar</item>
+        <item name="android:progress">@integer/progress_camera_seek_bar</item>
+        <item name="android:progressDrawable">@drawable/camera_custom_seek_bar</item>
+        <item name="android:thumb">@drawable/camera_seek_bar_thumb</item>
+    </style>
+
 </resources>
