@@ -1,6 +1,7 @@
 package com.example.john.layoutanimation;
 
 import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.content.Context;
@@ -10,6 +11,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -27,6 +29,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private ImageView mFilter;
     private ImageView mSettings;
     private ImageView mFrame;
+    private Button mBackReset;
+    private Button mNext;
 
     private int mMainToolsHeight = 0;
     private int mActualScreenHeight = 0;
@@ -57,7 +61,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         });
         mMainToolsLayout = (LinearLayout) findViewById(R.id.rlCameraMainTools);
-        mMainToolsLayout.setOnClickListener(this);
         mMainToolsLayout.post(new Runnable() {
             @Override
             public void run() {
@@ -70,9 +73,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mFilter = (ImageView) findViewById(R.id.ivFilter);
         mSettings = (ImageView) findViewById(R.id.ivSettings);
         mFrame = (ImageView) findViewById(R.id.ivFrame);
+        mBackReset = (Button) findViewById(R.id.bCameraNavigationBackReset);
+        mNext = (Button) findViewById(R.id.bCameraNavigationNext);
 
-        findViewById(R.id.bCameraNavigationBackReset).setOnClickListener(this);
-        findViewById(R.id.bCameraNavigationNext).setOnClickListener(this);
+        mMainToolsLayout.setOnClickListener(this);
+        mCrop.setOnClickListener(this);
+        mFilter.setOnClickListener(this);
+        mSettings.setOnClickListener(this);
+        mFrame.setOnClickListener(this);
+        mBackReset.setOnClickListener(this);
+        mNext.setOnClickListener(this);
     }
 
     private void getScreenHeight() {
@@ -88,6 +98,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 changeLayout(R.id.rlCameraMainTools);
                 changeLayoutVisibility(isLayoutAnimated);
                 animateLayout();
+                mMainToolsLayout.setEnabled(false);
                 break;
             case R.id.ivCrop:
                 changeSelectStateToTrue(mCrop);
@@ -115,6 +126,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                      * TODO : reset editing tools values then change button text to "Back"
                      */
                 } else {
+                    setViewsClickListener(!isLayoutAnimated);
                     animateLayout();
                     isValuesChanged = false;
                 }
@@ -130,8 +142,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private void animateLayout() {
         final long animDuration = 250;
         final int yPosition = (int) mEditingToolsY - ((int) ((double) mActualScreenHeight / 2));
-        mToolDisplay.getLayoutParams().height = mMainToolsHeight + yPosition;
         mNavigationLayout.getLayoutParams().height = mToolbarHeight;
+        mToolDisplay.getLayoutParams().height = mMainToolsHeight + yPosition - mToolbarHeight;
 
 
         AnimatorSet setAnim = new AnimatorSet();
@@ -143,39 +155,31 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             setAnim.playTogether(editingToolsAnim, toolDisplayAnim, navigationAnim);
         } else {
             ObjectAnimator editingToolsAnim = ObjectAnimator.ofFloat(mEditingToolsLayout, View.TRANSLATION_Y, 0, -yPosition).setDuration(animDuration);
-            ObjectAnimator toolDisplayAnim = ObjectAnimator.ofFloat(mToolDisplay, View.TRANSLATION_Y, mToolDisplay.getLayoutParams().height, 0).setDuration(animDuration);
+            ObjectAnimator toolDisplayAnim = ObjectAnimator.ofFloat(mToolDisplay, View.TRANSLATION_Y, mToolDisplay.getLayoutParams().height, -mToolbarHeight).setDuration(animDuration);
             ObjectAnimator navigationAnim = ObjectAnimator.ofFloat(mNavigationLayout, View.TRANSLATION_Y, mToolbarHeight, 0).setDuration(animDuration);
             setAnim.playTogether(editingToolsAnim, toolDisplayAnim, navigationAnim);
         }
-        setAnim.addListener(new Animator.AnimatorListener() {
+        setAnim.addListener(new AnimatorListenerAdapter() {
             @Override
-            public void onAnimationStart(Animator animator) {
+            public void onAnimationStart(Animator animation) {
+                super.onAnimationStart(animation);
                 if (!isLayoutAnimated) {
                     changeLayoutVisibility(isLayoutAnimated);
                 }
             }
 
             @Override
-            public void onAnimationEnd(Animator animator) {
+            public void onAnimationEnd(Animator animation) {
+                super.onAnimationEnd(animation);
                 if (isLayoutAnimated) {
                     changeLayoutVisibility(isLayoutAnimated);
+                    mMainToolsLayout.setEnabled(isLayoutAnimated);
                     isLayoutAnimated = false;
-                    setViewsClickListener(isLayoutAnimated);
                     changeSelectStateToFalse(mCrop, mFilter, mSettings, mFrame);
                 } else {
                     isLayoutAnimated = true;
                     setViewsClickListener(isLayoutAnimated);
                 }
-            }
-
-            @Override
-            public void onAnimationCancel(Animator animator) {
-
-            }
-
-            @Override
-            public void onAnimationRepeat(Animator animator) {
-
             }
         });
         setAnim.start();
@@ -197,10 +201,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         switch (viewId) {
             case R.id.rlCameraMainTools:
                 changeSelectStateToTrue(mCrop);
-                mCrop.setOnClickListener(this);
-                mFilter.setOnClickListener(this);
-                mSettings.setOnClickListener(this);
-                mFrame.setOnClickListener(this);
                 ft.replace(mToolDisplay.getId(), CameraCropFragment.newInstance());
                 break;
             case R.id.ivCrop:
@@ -230,11 +230,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void setViewsClickListener(boolean flag) {
-        mMainToolsLayout.setEnabled(!flag);
         mCrop.setEnabled(flag);
         mFilter.setEnabled(flag);
         mSettings.setEnabled(flag);
         mFrame.setEnabled(flag);
+        mBackReset.setEnabled(flag);
+        mNext.setEnabled(flag);
     }
 
     public static int getTabHeight(Context mContext) {

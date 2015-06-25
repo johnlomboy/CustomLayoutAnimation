@@ -3,54 +3,119 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/darker_grey"
-    android:gravity="center_horizontal">
+    android:gravity="center_horizontal|center_vertical">
 
     <TextView
         android:id="@+id/brightness"
-        android:layout_width="wrap_content"
+        android:layout_width="@dimen/layout_width_camera_text_view"
         android:layout_height="wrap_content"
+        android:gravity="end"
         android:text="@string/camera_brightness"
         android:textColor="@android:color/white"
         android:textSize="@dimen/text_size_camera_setting" />
 
     <SeekBar
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:id="@+id/sbBrightness"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/brightness"
+        android:max="10"
+        android:paddingBottom="8dp"
+        android:paddingTop="8dp"
+        android:progress="5"
+        android:progressDrawable="@drawable/camera_custom_seekbar"
+        android:thumb="@drawable/camera_seekbar_thumb" />
 
     <TextView
         android:id="@+id/contrast"
-        android:layout_width="wrap_content"
+        android:layout_width="@dimen/layout_width_camera_text_view"
         android:layout_height="wrap_content"
         android:layout_below="@+id/brightness"
+        android:gravity="end"
         android:text="@string/camera_contrast"
         android:textColor="@android:color/white"
         android:textSize="@dimen/text_size_camera_setting" />
 
+    <SeekBar
+        android:id="@+id/sbContrast"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/brightness"
+        android:layout_toRightOf="@id/contrast"
+        android:max="10"
+        android:paddingBottom="8dp"
+        android:paddingTop="8dp"
+        android:progress="5"
+        android:progressDrawable="@drawable/camera_custom_seekbar"
+        android:thumb="@drawable/camera_seekbar_thumb" />
+
     <TextView
         android:id="@+id/saturation"
-        android:layout_width="wrap_content"
+        android:layout_width="@dimen/layout_width_camera_text_view"
         android:layout_height="wrap_content"
         android:layout_below="@+id/contrast"
+        android:gravity="end"
         android:text="@string/camera_saturation"
         android:textColor="@android:color/white"
         android:textSize="@dimen/text_size_camera_setting" />
 
+    <SeekBar
+        android:id="@+id/sbSaturation"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/contrast"
+        android:layout_toRightOf="@id/saturation"
+        android:max="10"
+        android:paddingBottom="8dp"
+        android:paddingTop="8dp"
+        android:progress="5"
+        android:progressDrawable="@drawable/camera_custom_seekbar"
+        android:thumb="@drawable/camera_seekbar_thumb" />
+
     <TextView
         android:id="@+id/temperature"
-        android:layout_width="wrap_content"
+        android:layout_width="@dimen/layout_width_camera_text_view"
         android:layout_height="wrap_content"
         android:layout_below="@id/saturation"
+        android:gravity="end"
         android:text="@string/camera_temperature"
         android:textColor="@android:color/white"
         android:textSize="@dimen/text_size_camera_setting" />
 
+    <SeekBar
+        android:id="@+id/sbTemperature"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/saturation"
+        android:layout_toRightOf="@id/temperature"
+        android:max="10"
+        android:paddingBottom="8dp"
+        android:paddingTop="8dp"
+        android:progress="5"
+        android:progressDrawable="@drawable/camera_custom_seekbar"
+        android:thumb="@drawable/camera_seekbar_thumb" />
+
     <TextView
         android:id="@+id/exposure"
-        android:layout_width="wrap_content"
+        android:layout_width="@dimen/layout_width_camera_text_view"
         android:layout_height="wrap_content"
         android:layout_below="@+id/temperature"
+        android:gravity="end"
         android:text="@string/camera_exposure"
         android:textColor="@android:color/white"
         android:textSize="@dimen/text_size_camera_setting" />
+
+    <SeekBar
+        android:id="@+id/sbExposure"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/temperature"
+        android:layout_toRightOf="@id/exposure"
+        android:max="10"
+        android:paddingBottom="8dp"
+        android:paddingTop="8dp"
+        android:progress="5"
+        android:progressDrawable="@drawable/camera_custom_seekbar"
+        android:thumb="@drawable/camera_seekbar_thumb" />
 
 </RelativeLayout>

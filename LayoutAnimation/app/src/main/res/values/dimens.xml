@@ -4,4 +4,5 @@
     <dimen name="activity_vertical_margin">16dp</dimen>
 
     <dimen name="text_size_camera_setting">18sp</dimen>
+    <dimen name="layout_width_camera_text_view">110dp</dimen>
 </resources>
