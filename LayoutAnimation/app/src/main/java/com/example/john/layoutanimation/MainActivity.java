@@ -83,6 +83,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mFrame.setOnClickListener(this);
         mBackReset.setOnClickListener(this);
         mNext.setOnClickListener(this);
+
+        setViewsClickListener(isLayoutAnimated);
     }
 
     private void getScreenHeight() {

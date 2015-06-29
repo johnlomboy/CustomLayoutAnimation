@@ -4,6 +4,10 @@
     android:layout_height="wrap_content"
     tools:context=".MainActivity">
 
+    <!--<com.example.john.layoutanimation.ShitBar-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="wrap_content" />-->
+
     <LinearLayout
         android:id="@+id/rlCameraMainTools"
         android:layout_width="match_parent"
