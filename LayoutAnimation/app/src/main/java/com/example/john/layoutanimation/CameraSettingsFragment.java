@@ -82,10 +82,4 @@ public class CameraSettingsFragment extends Fragment {
             }
         }));
     }
-
-    private float calculateBrightness(float value) {
-        float finalValue;
-        finalValue = (value - 100) / 100;
-        return finalValue;
-    }
 }
