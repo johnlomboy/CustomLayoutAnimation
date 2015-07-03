@@ -6,6 +6,9 @@ import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.Bitmap;
+import android.graphics.Matrix;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
@@ -17,7 +20,7 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener, EditingTools {
 
     private static final String TAG = "MainActivity";
     private RelativeLayout mEditingToolsLayout;
@@ -38,6 +41,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private float mEditingToolsY = 0;
     private boolean isValuesChanged = false;
     private boolean isLayoutAnimated = false;
+
+    private ImageView mImage;
+    private Matrix mMatrix = new Matrix();
+    private Bitmap mBitmap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,6 +91,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mBackReset.setOnClickListener(this);
         mNext.setOnClickListener(this);
 
+        mImage = (ImageView) findViewById(R.id.ivImage);
+        mImage.setScaleType(ImageView.ScaleType.MATRIX);   //required
+        mImage.setImageResource(R.drawable.meadow);
+        mImage.post(new Runnable() {
+            @Override
+            public void run() {
+                scaleImage(mImage, (float) mImage.getWidth(), (float) mImage.getHeight(), 0);
+            }
+        });
+        mBitmap = ((BitmapDrawable) mImage.getDrawable()).getBitmap();
         setViewsClickListener(isLayoutAnimated);
     }
 
@@ -185,7 +202,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         });
         setAnim.start();
-
     }
 
     private void changeLayoutVisibility(boolean isDisplayed) {
@@ -203,10 +219,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         switch (viewId) {
             case R.id.rlCameraMainTools:
                 changeSelectStateToTrue(mCrop);
-                ft.replace(mToolDisplay.getId(), CameraCropFragment.newInstance());
+                ft.replace(mToolDisplay.getId(), CameraCropFragment.newInstance(this));
                 break;
             case R.id.ivCrop:
-                ft.replace(mToolDisplay.getId(), CameraCropFragment.newInstance());
+                ft.replace(mToolDisplay.getId(), CameraCropFragment.newInstance(this));
                 break;
             case R.id.ivFilter:
                 ft.replace(mToolDisplay.getId(), CameraFilterFragment.newInstance());
@@ -247,4 +263,70 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         styledAttributes.recycle();
         return mActionBarSize;
     }
+
+    @Override
+    public void onBrightnessChanged(int value) {
+        // TODO : do something
+    }
+
+    @Override
+    public void onCropChanged(int value) {
+        scaleImage(mImage, mImage.getWidth(), mImage.getHeight(), value);
+    }
+
+    private void scaleImage(ImageView view, float viewWidth, float viewHeight, int value) {
+        Matrix matrix = mMatrix;
+        matrix.reset();
+
+        float hvw = viewWidth / 2;
+        float hvh = viewHeight / 2;
+        float bw = (float) mBitmap.getWidth();
+        float bh = (float) mBitmap.getHeight();
+        float pScale;
+        if (isLayoutAnimated) {
+            pScale = Math.abs((float) value / 30) + (float) 1;
+        } else {
+            pScale = 1.0f;
+        }
+
+        /**
+         * First scale the bitmap to fit into the view.
+         * Use either scale factor for width and height,
+         * whichever is the smallest.
+         */
+        float s1x = viewWidth / bw;
+        float s1y = viewHeight / bh;
+        float s1 = (s1x < s1y) ? s1x : s1y;
+        matrix.postScale(s1, s1);
+
+        /**
+         * Translate the image up and left half the height
+         * and width so rotation (below) is around the center.
+         */
+        matrix.postTranslate(-hvw, -hvh);
+
+        /**
+         * Rotate the bitmap the specified number of degrees.
+         */
+        matrix.postRotate(value);
+
+        /**
+         * If the bitmap is to be scaled, do so.
+         * Also figure out the x and y offset values, which start
+         * with the values assigned to the view
+         * and are adjusted based on the scale.
+         */
+        if (pScale != 1.0f) {
+            matrix.postScale(pScale, pScale);
+        }
+
+        /**
+         * The last translation moves the bitmap to where it has to be to have its top left point be
+         * where it should be following the rotation and scaling.
+         */
+        matrix.postTranslate(hvw, hvh);
+        view.setImageMatrix(matrix);
+        view.invalidate();
+    }
+
 }
