@@ -47,39 +47,41 @@ public class CameraSettingsFragment extends Fragment {
 
     private void initializeVariables(View v) {
         mBrightnessBar = (SeekBar) v.findViewById(R.id.sbBrightness);
-        mBrightnessBar.setOnSeekBarChangeListener(new CameraSeekBarChangeListener(BRIGHTNESS, new CameraSeekBarChangeListener.CameraSeekBarCallback() {
+        mBrightnessBar.setOnSeekBarChangeListener(new CameraSettingsSeekBarChangeListener(BRIGHTNESS, new CameraSettingsSeekBarChangeListener.CameraSeekBarCallback() {
             @Override
             public void onSeekBarChanged(float value) {
                 Log.e(TAG, "Brightness : " + value);
             }
         }));
         mContrast = (SeekBar) v.findViewById(R.id.sbContrast);
-        mContrast.setOnSeekBarChangeListener(new CameraSeekBarChangeListener(CONTRAST, new CameraSeekBarChangeListener.CameraSeekBarCallback() {
+        mContrast.setOnSeekBarChangeListener(new CameraSettingsSeekBarChangeListener(CONTRAST, new CameraSettingsSeekBarChangeListener.CameraSeekBarCallback() {
             @Override
             public void onSeekBarChanged(float value) {
                 Log.e(TAG, "Contrast : " + value);
             }
         }));
         mSaturation = (SeekBar) v.findViewById(R.id.sbSaturation);
-        mSaturation.setOnSeekBarChangeListener(new CameraSeekBarChangeListener(SATURATION, new CameraSeekBarChangeListener.CameraSeekBarCallback() {
+        mSaturation.setOnSeekBarChangeListener(new CameraSettingsSeekBarChangeListener(SATURATION, new CameraSettingsSeekBarChangeListener.CameraSeekBarCallback() {
             @Override
             public void onSeekBarChanged(float value) {
                 Log.e(TAG, "Saturation : " + value);
             }
         }));
         mTemperature = (SeekBar) v.findViewById(R.id.sbTemperature);
-        mTemperature.setOnSeekBarChangeListener(new CameraSeekBarChangeListener(TEMPERATURE, new CameraSeekBarChangeListener.CameraSeekBarCallback() {
+        mTemperature.setOnSeekBarChangeListener(new CameraSettingsSeekBarChangeListener(TEMPERATURE, new CameraSettingsSeekBarChangeListener.CameraSeekBarCallback() {
             @Override
             public void onSeekBarChanged(float value) {
                 Log.e(TAG, "Temperature : " + value);
             }
         }));
         mExposure = (SeekBar) v.findViewById(R.id.sbExposure);
-        mExposure.setOnSeekBarChangeListener(new CameraSeekBarChangeListener(EXPOSURE, new CameraSeekBarChangeListener.CameraSeekBarCallback() {
+        mExposure.setOnSeekBarChangeListener(new CameraSettingsSeekBarChangeListener(EXPOSURE, new CameraSettingsSeekBarChangeListener.CameraSeekBarCallback() {
             @Override
             public void onSeekBarChanged(float value) {
                 Log.e(TAG, "Exposure : " + value);
             }
         }));
     }
+
+
 }

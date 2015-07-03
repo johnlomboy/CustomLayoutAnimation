@@ -6,13 +6,13 @@ import android.widget.SeekBar;
 /**
  * Created by Philip on 6/29/2015.
  */
-public class CameraSeekBarChangeListener implements SeekBar.OnSeekBarChangeListener {
+public class CameraSettingsSeekBarChangeListener implements SeekBar.OnSeekBarChangeListener {
 
     private static final String TAG = "CameraSeekBarChange..";
     private int settingType;
     private CameraSeekBarCallback c;
 
-    public CameraSeekBarChangeListener(int settingType, CameraSeekBarCallback c) {
+    public CameraSettingsSeekBarChangeListener(int settingType, CameraSeekBarCallback c) {
         this.settingType = settingType;
         this.c = c;
     }

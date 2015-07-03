@@ -18,7 +18,7 @@
 
     <SeekBar
         android:id="@+id/sbBrightness"
-        style="@style/CameraSeekBarTheme"
+        style="@style/CameraSettingsSeekBarTheme"
         android:layout_height="wrap_content"
         android:layout_toRightOf="@id/brightness" />
 
@@ -36,7 +36,7 @@
 
     <SeekBar
         android:id="@+id/sbContrast"
-        style="@style/CameraSeekBarTheme"
+        style="@style/CameraSettingsSeekBarTheme"
         android:layout_height="wrap_content"
         android:layout_below="@+id/brightness"
         android:layout_toRightOf="@id/contrast" />
@@ -55,7 +55,7 @@
 
     <SeekBar
         android:id="@+id/sbSaturation"
-        style="@style/CameraSeekBarTheme"
+        style="@style/CameraSettingsSeekBarTheme"
         android:layout_height="wrap_content"
         android:layout_below="@+id/contrast"
         android:layout_toRightOf="@id/saturation" />
@@ -74,7 +74,7 @@
 
     <SeekBar
         android:id="@+id/sbTemperature"
-        style="@style/CameraSeekBarTheme"
+        style="@style/CameraSettingsSeekBarTheme"
         android:layout_height="wrap_content"
         android:layout_below="@+id/saturation"
         android:layout_toRightOf="@id/temperature" />
@@ -93,7 +93,7 @@
 
     <SeekBar
         android:id="@+id/sbExposure"
-        style="@style/CameraSeekBarTheme"
+        style="@style/CameraSettingsSeekBarTheme"
         android:layout_height="wrap_content"
         android:layout_below="@+id/temperature"
         android:layout_toRightOf="@id/exposure" />
