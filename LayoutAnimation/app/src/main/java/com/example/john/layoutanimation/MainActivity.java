@@ -7,12 +7,13 @@ import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
-import android.graphics.Matrix;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -24,6 +25,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private static final String TAG = "MainActivity";
     private RelativeLayout mEditingToolsLayout;
+    private RelativeLayout mToolsContainer;
     private LinearLayout mMainToolsLayout;
     private LinearLayout mToolDisplay;
     private LinearLayout mNavigationLayout;
@@ -35,16 +37,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Button mBackReset;
     private Button mNext;
 
+    private int mToolsContainerHeight = 0;
     private int mMainToolsHeight = 0;
+    private int toolDisplayInitialHeight = 0;
     private int mActualScreenHeight = 0;
     private int mToolbarHeight = 0;
+    private int animatedYPosition = 0;
     private float mEditingToolsY = 0;
+    private int mEditingToolsHeight = 0;
+    private float mToolsContainerY = 0;
     private boolean isValuesChanged = false;
     private boolean isLayoutAnimated = false;
 
     private ImageView mImage;
-    private Matrix mMatrix = new Matrix();
     private Bitmap mBitmap;
+    private ImageScaling mImageScaling;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,13 +65,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         getScreenHeight();
         mToolbarHeight = getTabHeight(this);
 
+        mToolsContainer = (RelativeLayout) findViewById(R.id.rlToolsContainer);
+        mToolsContainer.post(new Runnable() {
+            @Override
+            public void run() {
+                mToolsContainerHeight = mToolsContainer.getHeight();
+                mToolsContainerY = mToolsContainer.getY();
+            }
+        });
+
         mToolDisplay = (LinearLayout) findViewById(R.id.llToolDisplay);
 
         mEditingToolsLayout = (RelativeLayout) findViewById(R.id.rlCameraEditingTools);
+        mEditingToolsLayout.bringToFront();
         mEditingToolsLayout.post(new Runnable() {
             @Override
             public void run() {
                 mEditingToolsY = mEditingToolsLayout.getY();
+                mEditingToolsHeight = mEditingToolsLayout.getHeight();
             }
         });
         mMainToolsLayout = (LinearLayout) findViewById(R.id.rlCameraMainTools);
@@ -74,6 +92,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 mMainToolsHeight = mMainToolsLayout.getHeight();
             }
         });
+
         mNavigationLayout = (LinearLayout) findViewById(R.id.llCameraNavigation);
 
         mCrop = (ImageView) findViewById(R.id.ivCrop);
@@ -97,11 +116,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mImage.post(new Runnable() {
             @Override
             public void run() {
-                scaleImage(mImage, (float) mImage.getWidth(), (float) mImage.getHeight(), 0);
+                mImageScaling = new ImageScaling(mImage, mBitmap);
+                mImageScaling.startScaling();
             }
         });
         mBitmap = ((BitmapDrawable) mImage.getDrawable()).getBitmap();
         setViewsClickListener(isLayoutAnimated);
+
+
     }
 
     private void getScreenHeight() {
@@ -116,7 +138,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.rlCameraMainTools:
                 changeLayout(R.id.rlCameraMainTools);
                 changeLayoutVisibility(isLayoutAnimated);
-                animateLayout();
+                animateAngLayout();
                 mMainToolsLayout.setEnabled(false);
                 break;
             case R.id.ivCrop:
@@ -146,7 +168,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                      */
                 } else {
                     setViewsClickListener(!isLayoutAnimated);
-                    animateLayout();
+                    animateAngLayout();
+                    mEditingToolsLayout.setOnTouchListener(null);
                     isValuesChanged = false;
                 }
                 break;
@@ -158,23 +181,23 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    private void animateLayout() {
+    private void animateAngLayout() {
         final long animDuration = 250;
-        final int yPosition = (int) mEditingToolsY - ((int) ((double) mActualScreenHeight / 2));
+        final int yPosition = (int) mToolsContainerY - ((int) ((double) mActualScreenHeight / 2));
+        animatedYPosition = yPosition;
         mNavigationLayout.getLayoutParams().height = mToolbarHeight;
         mToolDisplay.getLayoutParams().height = mMainToolsHeight + yPosition - mToolbarHeight;
-
 
         AnimatorSet setAnim = new AnimatorSet();
 
         if (isLayoutAnimated) {
             ObjectAnimator editingToolsAnim = ObjectAnimator.ofFloat(mEditingToolsLayout, View.TRANSLATION_Y, mEditingToolsLayout.getTranslationY(), 0).setDuration(animDuration);
-            ObjectAnimator toolDisplayAnim = ObjectAnimator.ofFloat(mToolDisplay, View.TRANSLATION_Y, 0, mToolDisplay.getLayoutParams().height).setDuration(animDuration);
+            ObjectAnimator toolDisplayAnim = ObjectAnimator.ofFloat(mToolDisplay, View.TRANSLATION_Y, mToolDisplay.getTranslationY(), mToolDisplay.getLayoutParams().height).setDuration(animDuration);
             ObjectAnimator navigationAnim = ObjectAnimator.ofFloat(mNavigationLayout, View.TRANSLATION_Y, 0, mToolbarHeight).setDuration(animDuration);
             setAnim.playTogether(editingToolsAnim, toolDisplayAnim, navigationAnim);
         } else {
             ObjectAnimator editingToolsAnim = ObjectAnimator.ofFloat(mEditingToolsLayout, View.TRANSLATION_Y, 0, -yPosition).setDuration(animDuration);
-            ObjectAnimator toolDisplayAnim = ObjectAnimator.ofFloat(mToolDisplay, View.TRANSLATION_Y, mToolDisplay.getLayoutParams().height, -mToolbarHeight).setDuration(animDuration);
+            ObjectAnimator toolDisplayAnim = ObjectAnimator.ofFloat(mToolDisplay, View.TRANSLATION_Y, mToolDisplay.getLayoutParams().height, -mEditingToolsHeight).setDuration(animDuration);
             ObjectAnimator navigationAnim = ObjectAnimator.ofFloat(mNavigationLayout, View.TRANSLATION_Y, mToolbarHeight, 0).setDuration(animDuration);
             setAnim.playTogether(editingToolsAnim, toolDisplayAnim, navigationAnim);
         }
@@ -183,7 +206,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             public void onAnimationStart(Animator animation) {
                 super.onAnimationStart(animation);
                 if (!isLayoutAnimated) {
+                    /**
+                     * Adjust tools container to provide space for the animated layout
+                     */
+                    ResizeAnimation resizeAnimation = new ResizeAnimation(mToolsContainer, mToolsContainerHeight + yPosition);
+                    resizeAnimation.setDuration(animDuration - 50);
+                    mToolsContainer.startAnimation(resizeAnimation);
                     changeLayoutVisibility(isLayoutAnimated);
+                } else {
+                    /**
+                     * Adjust tools container to original size
+                     */
+                    ResizeAnimation resizeAnimation = new ResizeAnimation(mToolsContainer, mToolsContainerHeight);
+                    resizeAnimation.setDuration(animDuration - 50);
+                    mToolsContainer.startAnimation(resizeAnimation);
                 }
             }
 
@@ -196,12 +232,30 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     isLayoutAnimated = false;
                     changeSelectStateToFalse(mCrop, mFilter, mSettings, mFrame);
                 } else {
+                    initializeGestureListener();
                     isLayoutAnimated = true;
                     setViewsClickListener(isLayoutAnimated);
                 }
             }
         });
         setAnim.start();
+    }
+
+    private void initializeGestureListener() {
+        final EditingToolsGestureListener etg = new EditingToolsGestureListener(mToolsContainer, mEditingToolsLayout, animatedYPosition);
+        final GestureDetector gdt = new GestureDetector(this, etg);
+        mEditingToolsLayout.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                gdt.onTouchEvent(motionEvent);
+                switch (motionEvent.getAction() & MotionEvent.ACTION_MASK) {
+                    case MotionEvent.ACTION_UP:
+                        etg.onActionUp();
+                        break;
+                }
+                return true;
+            }
+        });
     }
 
     private void changeLayoutVisibility(boolean isDisplayed) {
@@ -256,7 +310,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mNext.setEnabled(flag);
     }
 
-    public static int getTabHeight(Context mContext) {
+    private int getTabHeight(Context mContext) {
         final TypedArray styledAttributes = mContext.getTheme().obtainStyledAttributes(
                 new int[]{android.R.attr.actionBarSize});
         int mActionBarSize = (int) styledAttributes.getDimension(0, 0);
@@ -271,62 +325,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onCropChanged(int value) {
-        scaleImage(mImage, mImage.getWidth(), mImage.getHeight(), value);
+        mImageScaling.scaleAndRotateImage(value, isLayoutAnimated);
     }
-
-    private void scaleImage(ImageView view, float viewWidth, float viewHeight, int value) {
-        Matrix matrix = mMatrix;
-        matrix.reset();
-
-        float hvw = viewWidth / 2;
-        float hvh = viewHeight / 2;
-        float bw = (float) mBitmap.getWidth();
-        float bh = (float) mBitmap.getHeight();
-        float pScale;
-        if (isLayoutAnimated) {
-            pScale = Math.abs((float) value / 30) + (float) 1;
-        } else {
-            pScale = 1.0f;
-        }
-
-        /**
-         * First scale the bitmap to fit into the view.
-         * Use either scale factor for width and height,
-         * whichever is the smallest.
-         */
-        float s1x = viewWidth / bw;
-        float s1y = viewHeight / bh;
-        float s1 = (s1x < s1y) ? s1x : s1y;
-        matrix.postScale(s1, s1);
-
-        /**
-         * Translate the image up and left half the height
-         * and width so rotation (below) is around the center.
-         */
-        matrix.postTranslate(-hvw, -hvh);
-
-        /**
-         * Rotate the bitmap the specified number of degrees.
-         */
-        matrix.postRotate(value);
-
-        /**
-         * If the bitmap is to be scaled, do so.
-         * Also figure out the x and y offset values, which start
-         * with the values assigned to the view
-         * and are adjusted based on the scale.
-         */
-        if (pScale != 1.0f) {
-            matrix.postScale(pScale, pScale);
-        }
-
-        /**
-         * The last translation moves the bitmap to where it has to be to have its top left point be
-         * where it should be following the rotation and scaling.
-         */
-        matrix.postTranslate(hvw, hvh);
-        view.setImageMatrix(matrix);
-        view.invalidate();
-    }
-
 }
